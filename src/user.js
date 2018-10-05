@@ -1,16 +1,14 @@
-const client = require('./client');
-
 class User {
   /** get the current user that is using YNAB
    * 
-   * @return {User}
+   * @return {Request}
    **/
   static get() {
-    return client.http.get('/user')
-      .then(res => {
-        const userId = res.data.data.user.id;
-        return new User(userId);
-      })
+    return {method: 'get', url: '/user'};
+  }
+
+  static fromResponse(res) {
+    return new User(res.data.user.id);
   }
 
   constructor(userId) {

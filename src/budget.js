@@ -1,30 +1,42 @@
-const client = require('./client');
-
 class Budget {
   /**
    * Get all of the budgets
    * 
-   * @return {Array}
+   * @return {Request}
    */
   static all() {
-    return client.http.get('/budgets')
-      .then(res => {
-        const budgets = res.data.data.budgets;
-        return budgets.map(({id, name}) => new Budget(id, name));
-      })
+    return {method: 'get', url: 'budgets'};
   }
 
   /**
    * Get a budget by the budget ID
    * 
-   * @return {Budget}
+   * @return {Request}
    */
   static get(budgetId) {
-    return client.http.get(`/budgets/${budgetId}`)
-      .then(res => {
-        const budget = res.data.data.budget;
-        return new Budget(budget.id, budget.name);
-      })
+    return {method: 'get', url: `budgets/${budgetId}`};
+  }
+
+  /**
+   * Parse a response data into a list of Budgets
+   *
+   * @param Response
+   * @return [Budget]
+   */
+  static fromResponseList(res) {
+    const budgets = res.data.budgets;
+    return budgets.map(({id, name}) => new Budget(id, name));
+  }
+
+  /**
+   * Parse a response data into a budget
+   *
+   * @param {Response}
+   * @return Budget
+   */
+  static fromResponse(res) {
+    const budget = res.data.budget;
+    return new Budget(budget.id, budget.name);
   }
   
   constructor(id, name) {

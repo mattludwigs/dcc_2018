@@ -1,13 +1,25 @@
 const axios = require('axios');
+const Response = require('./response');
 
-const authToken = process.env.YNAB_TOKEN;
+class Client {
+  constructor({authToken, baseURL}) {
+    this.http = axios.create({
+      baseURL: baseURL,
+      headers: {'Authorization': `Bearer ${authToken}`}
+    });
+  }
 
-const client = {
-  http: axios.create({
-    baseURL: 'https://api.youneedabudget.com/v1',
-    headers: {'Authorization': `Bearer ${authToken}`}
-  })
+  runRequest(config) {
+    return this.http.request(config)
+      .then(res => {
+        return new Response({
+          headers: res.headers,
+          status: res.status,
+          data: res.data.data,
+        });
+      });
+  }
 }
 
-module.exports = client;
+module.exports = Client;
 
